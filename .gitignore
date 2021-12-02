@@ -8,3 +8,7 @@
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
+
+###> lamasfoker/p2p-empire-news-bot ###
+/deploy.sh
+###< lamasfoker/p2p-empire-news-bot ###%
