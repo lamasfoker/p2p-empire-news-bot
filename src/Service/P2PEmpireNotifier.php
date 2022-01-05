@@ -10,6 +10,7 @@ use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Throwable;
 
 final class P2PEmpireNotifier
 {
@@ -41,18 +42,19 @@ TELEGRAM;
         $this->client = $client;
     }
 
+
     /**
      * @throws TransportExceptionInterface
-     * @throws ServerExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws DecodingExceptionInterface
-     * @throws ClientExceptionInterface
      */
     public function notify(): void
     {
-        $news = $this->crawlNews();
-        $filteredNews = $this->filterNews($news);
-        $this->sendTelegramMessages($filteredNews);
+        try {
+            $news = $this->crawlNews();
+            $filteredNews = $this->filterNews($news);
+            $this->sendNews($filteredNews);
+        } catch (Throwable $e) {
+            $this->sentTelegramMessage($e->getMessage());
+        }
     }
 
     /**
@@ -82,21 +84,29 @@ TELEGRAM;
     /**
      * @throws TransportExceptionInterface
      */
-    private function sendTelegramMessages(array $news): void
+    private function sendNews(array $news): void
+    {
+        foreach ($news as $info) {
+            $this->sentTelegramMessage(sprintf(
+                self::TEMPLATE_TELEGRAM_MESSAGE_NEWS,
+                $info['platformName'],
+                $info['newsText'],
+            ));
+        }
+    }
+
+    /**
+     * @throws TransportExceptionInterface
+     */
+    private function sentTelegramMessage(string $content): void
     {
         $endpoint = sprintf(self::TELEGRAM_SEND_MESSAGE_ENDPOINT, $this->p2pempireNewsBotTelegramSecretToken);
-        foreach ($news as $info) {
-            $this->client->request('POST', $endpoint, [
-                'body' => [
-                    'chat_id' => $this->myTelegramClientId,
-                    'parse_mode' => 'HTML',
-                    'text' => sprintf(
-                        self::TEMPLATE_TELEGRAM_MESSAGE_NEWS,
-                        $info['platformName'],
-                        $info['newsText'],
-                    )
-                ]
-            ]);
-        }
+        $this->client->request('POST', $endpoint, [
+            'body' => [
+                'chat_id' => $this->myTelegramClientId,
+                'parse_mode' => 'HTML',
+                'text' => $content
+            ]
+        ]);
     }
 }
