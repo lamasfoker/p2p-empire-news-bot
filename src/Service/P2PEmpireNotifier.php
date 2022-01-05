@@ -65,7 +65,7 @@ TELEGRAM;
     private function crawlNews(): array
     {
         $response = $this->client->request('POST', self::P2PEMPIRE_NEWS_ENDPOINT, [
-            'json' => ['Id' => '-1'],
+            'json' => ['Id' => '-1', 'SelectedLanguage' => 'en'],
         ]);
         return $response->toArray();
     }
