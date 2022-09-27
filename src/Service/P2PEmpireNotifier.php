@@ -4,8 +4,9 @@ declare(strict_types=1);
 namespace App\Service;
 
 use DateTime;
+use JsonException;
+use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
@@ -14,7 +15,7 @@ use Throwable;
 
 final class P2PEmpireNotifier
 {
-    private const P2PEMPIRE_NEWS_ENDPOINT = 'https://adminapi.p2pempire.com/api/NewsFeed/GetAllNews';
+    private const P2PEMPIRE_NEWS_ENDPOINT = 'https://p2pempire.com/en/newsfeed';
 
     private const TELEGRAM_SEND_MESSAGE_ENDPOINT = 'https://api.telegram.org/bot%s/sendMessage';
 
@@ -61,15 +62,16 @@ TELEGRAM;
      * @throws TransportExceptionInterface
      * @throws ServerExceptionInterface
      * @throws RedirectionExceptionInterface
-     * @throws DecodingExceptionInterface
      * @throws ClientExceptionInterface
+     * @throws JsonException
      */
     private function crawlNews(): array
     {
-        $response = $this->client->request('POST', self::P2PEMPIRE_NEWS_ENDPOINT, [
-            'json' => ['Id' => '-1', 'SelectedLanguage' => 'en'],
-        ]);
-        return $response->toArray();
+        $response = $this->client->request('GET', self::P2PEMPIRE_NEWS_ENDPOINT);
+        $crawler = new Crawler($response->getContent());
+        $data = $crawler->filter('script#__NEXT_DATA__')->text();
+
+        return json_decode($data, true, 512, JSON_THROW_ON_ERROR)['props']['pageProps']['news'];
     }
 
     private function filterNews(array $news): array
