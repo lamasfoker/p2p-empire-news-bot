@@ -11,4 +11,5 @@
 
 ###> lamasfoker/p2p-empire-news-bot ###
 /deploy.sh
+/composer.phar
 ###< lamasfoker/p2p-empire-news-bot ###%
