@@ -91,7 +91,7 @@ TELEGRAM;
         foreach ($news as $info) {
             $this->sentTelegramMessage(sprintf(
                 self::TEMPLATE_TELEGRAM_MESSAGE_NEWS,
-                $info['platformName'],
+                $info['name'],
                 $info['newsText'],
             ));
         }
