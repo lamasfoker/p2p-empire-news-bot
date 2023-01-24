@@ -8,7 +8,7 @@ on:
 env:
     APP_ENV: "prod"
     APP_DEBUG: "1"
-    P2PEMPIRE_NEWS_BOT_TELEGRAM_SECRET_TOKEN: "${{ secrets.ESTATEGURU_CRAWLER_BOT_TELEGRAM_SECRET_TOKEN }}"
+    P2PEMPIRE_NEWS_BOT_TELEGRAM_SECRET_TOKEN: "${{ secrets.P2PEMPIRE_NEWS_BOT_TELEGRAM_SECRET_TOKEN }}"
     MY_TELEGRAM_CLIENT_ID: "${{ secrets.MY_TELEGRAM_CLIENT_ID }}"
 
 jobs:
@@ -40,4 +40,4 @@ jobs:
                 run: composer install --verbose --prefer-dist --no-progress --no-interaction --no-dev --optimize-autoloader --no-scripts
 
             -   name: Activate Command
-                run: bin/console -e prod lamasfoker:p2pempire-crawl --no-debug -vv
+                run: bin/console lamasfoker:p2pempire-crawl -vv
