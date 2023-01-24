@@ -1,14 +1,15 @@
 name: "Send Message"
 
 on:
+    push:
     schedule:
         - cron: "0 14 * * *"
 
 env:
-    APP_ENV: prod
-    APP_DEBUG: 0
-    P2PEMPIRE_NEWS_BOT_TELEGRAM_SECRET_TOKEN: ${{ secrets.ESTATEGURU_CRAWLER_BOT_TELEGRAM_SECRET_TOKEN }}
-    MY_TELEGRAM_CLIENT_ID: ${{ secrets.MY_TELEGRAM_CLIENT_ID }}
+    APP_ENV: "prod"
+    APP_DEBUG: "1"
+    P2PEMPIRE_NEWS_BOT_TELEGRAM_SECRET_TOKEN: "${{ secrets.ESTATEGURU_CRAWLER_BOT_TELEGRAM_SECRET_TOKEN }}"
+    MY_TELEGRAM_CLIENT_ID: "${{ secrets.MY_TELEGRAM_CLIENT_ID }}"
 
 jobs:
 
